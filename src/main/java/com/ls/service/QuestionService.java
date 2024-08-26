@@ -1,7 +1,8 @@
 package com.ls.service;
 
-import generator.domain.Question;
+
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ls.model.entity.Question;
 
 /**
 * @author 32093

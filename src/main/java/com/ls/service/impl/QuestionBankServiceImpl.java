@@ -1,7 +1,7 @@
 package com.ls.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import generator.domain.QuestionBank;
+import com.ls.model.entity.QuestionBank;
 import com.ls.service.QuestionBankService;
 import com.ls.mapper.QuestionBankMapper;
 import org.springframework.stereotype.Service;
