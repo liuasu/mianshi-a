@@ -26,11 +26,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * ${dataName}接口
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
- */
+* title: ${dataName}
+* author: liaoshuo
+* package: ${packageName}
+* date: ${date}
+* description: ${dataName}接口
+*/
 @RestController
 @RequestMapping("/${dataKey}")
 @Slf4j

@@ -21,7 +21,7 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mianshi_a
+    url: jdbc:mysql://192.168.245.131:3306/mianshi_a
     username: root
     password: 123456
   # Redis 配置
@@ -94,7 +94,7 @@ cos:
 knife4j:
   enable: true
   openapi:
-    title: "接口文档"
+    title: "六啊朔面试刷题接口文档"
     version: 1.0
     group:
       default:

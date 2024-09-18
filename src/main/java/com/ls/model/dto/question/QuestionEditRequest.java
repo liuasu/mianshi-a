@@ -1,4 +1,4 @@
-package ${packageName}.model.dto.${dataKey};
+package com.ls.model.dto.question;
 
 import lombok.Data;
 
@@ -7,14 +7,14 @@ import java.util.List;
 
 
 /**
-* title: ${dataName}
+* title: 题目
 * author: liaoshuo
-* package: ${packageName}
-* date: ${date}
-* description: 编辑${dataName}请求
+* package: com.ls
+* date: 2024-09-04
+* description: 编辑题目请求
 */
 @Data
-public class ${upperDataKey}EditRequest implements Serializable {
+public class QuestionEditRequest implements Serializable {
 
     /**
      * id
@@ -35,6 +35,12 @@ public class ${upperDataKey}EditRequest implements Serializable {
      * 标签列表
      */
     private List<String> tags;
+
+    /**
+     * 推荐答案
+     */
+    private String answer;
+
 
     private static final long serialVersionUID = 1L;
 }

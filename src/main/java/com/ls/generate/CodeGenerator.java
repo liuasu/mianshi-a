@@ -4,6 +4,8 @@ import cn.hutool.core.io.FileUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +32,9 @@ public class CodeGenerator {
     public static void main(String[] args) throws TemplateException, IOException {
         // 指定生成参数
         String packageName = "com.ls";
-        String dataName = "用户评论";
-        String dataKey = "userComment";
-        String upperDataKey = "UserComment";
+        String dataName = "题库题目";
+        String dataKey = "questionBankQuestion";
+        String upperDataKey = "QuestionBankQuestion";
 
         // 封装生成参数
         Map<String, Object> dataModel = new HashMap<>();
@@ -40,6 +42,7 @@ public class CodeGenerator {
         dataModel.put("dataName", dataName);
         dataModel.put("dataKey", dataKey);
         dataModel.put("upperDataKey", upperDataKey);
+        dataModel.put("date", new LocalDate());
 
         // 生成路径默认值
         String projectPath = System.getProperty("user.dir");

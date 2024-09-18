@@ -5,12 +5,14 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
+
 /**
- * 更新${dataName}请求
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
- */
+* title: ${dataName}
+* author: liaoshuo
+* package: ${packageName}
+* date: ${date}
+* description: 更新${dataName}请求
+*/
 @Data
 public class ${upperDataKey}UpdateRequest implements Serializable {
 

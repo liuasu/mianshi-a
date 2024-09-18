@@ -32,11 +32,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * ${dataName}服务实现
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
- */
+* title: ${dataName}
+* author: liaoshuo
+* package: ${packageName}
+* date: ${date}
+* description: ${dataName}服务实现
+*/
 @Service
 @Slf4j
 public class ${upperDataKey}ServiceImpl extends ServiceImpl<${upperDataKey}Mapper, ${upperDataKey}> implements ${upperDataKey}Service {

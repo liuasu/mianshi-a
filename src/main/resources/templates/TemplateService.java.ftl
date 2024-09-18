@@ -9,12 +9,14 @@ import ${packageName}.model.vo.${upperDataKey}VO;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 /**
- * ${dataName}服务
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
- */
+* title: ${dataName}
+* author: liaoshuo
+* package: ${packageName}
+* date: ${date}
+* description: ${dataName}服务
+*/
 public interface ${upperDataKey}Service extends IService<${upperDataKey}> {
 
     /**
