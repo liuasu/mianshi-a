@@ -3,6 +3,7 @@ package com.ls.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ls.model.dto.question.QuestionBatchDelRequest;
 import com.ls.model.dto.question.QuestionQueryRequest;
 import com.ls.model.entity.Question;
 import com.ls.model.vo.QuestionVO;
@@ -54,4 +55,19 @@ public interface QuestionService extends IService<Question> {
     Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request);
 
     Page<Question> listQuestionByPage(QuestionQueryRequest questionQueryRequest);
+
+    /**
+     * 从 ES 搜索
+     *
+     * @param questionQueryRequest QUESTION 查询请求
+     * @return {@link Page }<{@link Question }>
+     */
+    Page<Question> searchFromEs(QuestionQueryRequest questionQueryRequest);
+
+    /**
+     * 批量删除问题
+     *
+     * @param questionBatchDelRequest Question Batch del Request
+     */
+    void batchDelQuestions(QuestionBatchDelRequest questionBatchDelRequest);
 }

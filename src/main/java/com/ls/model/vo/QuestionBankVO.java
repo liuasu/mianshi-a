@@ -1,15 +1,12 @@
 package com.ls.model.vo;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ls.model.entity.Question;
 import com.ls.model.entity.QuestionBank;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -66,7 +63,7 @@ public class QuestionBankVO implements Serializable {
     /**
      * 题库里的题库（分页）
      */
-    Page<Question> questionPage;
+    Page<QuestionVO> questionPage;
 
 
     /**

@@ -1,6 +1,6 @@
 package com.ls.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ls.annotation.AuthCheck;
 import com.ls.common.BaseResponse;
@@ -10,12 +10,8 @@ import com.ls.common.ResultUtils;
 import com.ls.constant.UserConstant;
 import com.ls.exception.BusinessException;
 import com.ls.exception.ThrowUtils;
-import com.ls.model.dto.question.QuestionAddRequest;
-import com.ls.model.dto.question.QuestionEditRequest;
-import com.ls.model.dto.question.QuestionQueryRequest;
-import com.ls.model.dto.question.QuestionUpdateRequest;
+import com.ls.model.dto.question.*;
 import com.ls.model.entity.Question;
-import com.ls.model.entity.QuestionBankQuestion;
 import com.ls.model.entity.User;
 import com.ls.model.vo.QuestionVO;
 import com.ls.service.QuestionBankQuestionService;
@@ -66,6 +62,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
+        List<String> tags = questionAddRequest.getTags();
+        if(tags!= null){
+           question.setTags(JSONUtil.toJsonStr(tags));
+        }
         // 数据校验
         questionService.validQuestion(question, true);
         // todo 填充默认值
@@ -123,6 +123,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
+        List<String> tags = questionUpdateRequest.getTags();
+        if(tags!= null){
+            question.setTags(JSONUtil.toJsonStr(tags));
+        }
         // 数据校验
         questionService.validQuestion(question, false);
         // 判断是否存在
@@ -227,6 +231,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionEditRequest, question);
+        List<String> tags = questionEditRequest.getTags();
+        if(tags!= null){
+            question.setTags(JSONUtil.toJsonStr(tags));
+        }
         // 数据校验
         questionService.validQuestion(question, false);
         User loginUser = userService.getLoginUser(request);
@@ -242,6 +250,38 @@ public class QuestionController {
         boolean result = questionService.updateById(question);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+
+    /**
+     * 搜索问题 (es)
+     *
+     * @param questionQueryRequest QUESTION 查询请求
+     * @param request              请求
+     * @return {@link BaseResponse }<{@link Page }<{@link QuestionVO }>>
+     */
+    @PostMapping("/search/page/vo")
+    public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
+                                                                 HttpServletRequest request) {
+        long size = questionQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
+        Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
+        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+    }
+
+    /**
+     * 批量删除问题(管理员)
+     *
+     * @param questionBatchDelRequest Question Batch del Request
+     * @return {@link BaseResponse }<{@link Page }<{@link QuestionVO }>>
+     */
+    @PostMapping("/batch/del")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDelQuestions(@RequestBody QuestionBatchDelRequest questionBatchDelRequest) {
+    ThrowUtils.throwIf(questionBatchDelRequest == null,ErrorCode.PARAMS_ERROR);
+    questionService.batchDelQuestions(questionBatchDelRequest);
+    return ResultUtils.success(true);
     }
 
     // endregion

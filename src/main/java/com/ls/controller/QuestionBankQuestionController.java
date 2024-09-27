@@ -9,10 +9,7 @@ import com.ls.common.ResultUtils;
 import com.ls.constant.UserConstant;
 import com.ls.exception.BusinessException;
 import com.ls.exception.ThrowUtils;
-import com.ls.model.dto.questionbankquestion.QuestionBankQuestionAddRequest;
-import com.ls.model.dto.questionbankquestion.QuestionBankQuestionQueryRequest;
-import com.ls.model.dto.questionbankquestion.QuestionBankQuestionRemoveRequest;
-import com.ls.model.dto.questionbankquestion.QuestionBankQuestionUpdateRequest;
+import com.ls.model.dto.questionbankquestion.*;
 import com.ls.model.entity.QuestionBankQuestion;
 import com.ls.model.entity.User;
 import com.ls.model.vo.QuestionBankQuestionVO;
@@ -223,5 +220,35 @@ public class QuestionBankQuestionController {
                 .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
                 .remove();
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 批量向题库添加题目（仅管理员可用）
+     *
+     * @param batchAddRequest 批量添加请求
+     * @param request         请求
+     * @return
+     */
+    @PostMapping("/batch/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchAddQuestionBankQuestion(@RequestBody QuestionBankQuestionBatchAddRequest batchAddRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(batchAddRequest==null,ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        questionBankQuestionService.batchAddQuestionBankQuestion(batchAddRequest,loginUser);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 批量向题库移除题目（仅管理员可用）
+     *
+     * @param batchRemoveRequest 批量删除请求
+     * @return
+     */
+    @PostMapping("/batch/remove")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchRemoveQuestionBankQuestion(@RequestBody QuestionBankQuestionBatchRemoveRequest batchRemoveRequest) {
+        ThrowUtils.throwIf(batchRemoveRequest==null,ErrorCode.PARAMS_ERROR);
+        questionBankQuestionService.batchRemoveQuestionBankQuestion(batchRemoveRequest);
+        return ResultUtils.success(true);
     }
 }

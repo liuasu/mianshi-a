@@ -26,15 +26,19 @@ public class QuestionVO implements Serializable {
     private Long id;
 
     /**
-     * 题库 id
+     * 标题
      */
-    private Long questionBankId;
+    private String title;
 
     /**
-     * 题目 id
+     * 内容
      */
-    private Long questionId;
+    private String content;
 
+    /**
+     * 推荐答案
+     */
+    private String answer;
 
     /**
      * 创建用户 id
@@ -51,6 +55,10 @@ public class QuestionVO implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 标签列表
+     */
+    private List<String> tagList;
 
     /**
      * 创建用户信息
@@ -69,6 +77,8 @@ public class QuestionVO implements Serializable {
         }
         Question question = new Question();
         BeanUtils.copyProperties(questionVO, question);
+        List<String> tagList = questionVO.getTagList();
+        question.setTags(JSONUtil.toJsonStr(tagList));
         return question;
     }
 
@@ -84,6 +94,7 @@ public class QuestionVO implements Serializable {
         }
         QuestionVO questionVO = new QuestionVO();
         BeanUtils.copyProperties(question, questionVO);
+        questionVO.setTagList(JSONUtil.toList(JSONUtil.parseArray(question.getTags()), String.class));
         return questionVO;
     }
 }

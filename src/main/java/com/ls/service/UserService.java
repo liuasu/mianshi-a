@@ -6,9 +6,12 @@ import com.ls.model.dto.user.UserQueryRequest;
 import com.ls.model.entity.User;
 import com.ls.model.vo.LoginUserVO;
 import com.ls.model.vo.UserVO;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 用户服务
@@ -118,4 +121,21 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
+
+    /**
+     * 添加用户签到
+     *
+     * @param userId 用户 ID
+     * @return boolean
+     */
+    boolean addUserSign(long userId);
+
+    /**
+     * 获取用户签到
+     *
+     * @param year   年
+     * @param userId 用户 ID
+     * @return {@link Map }<{@link LocalDate },{@link Boolean }>
+     */
+    List<Integer> getUserSignin(Integer year,long userId);
 }
