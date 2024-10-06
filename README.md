@@ -5,57 +5,18 @@
 
 基于“面试鸭”的面试刷题网。
 
+### 后端技术
 
-## 模板特点
-
-### 主流框架 & 特性
-
-- Spring Boot 2.7.x（贼新）
-- Spring MVC
-- MyBatis + MyBatis Plus 数据访问（开启分页）
-- Spring Boot 调试工具和项目处理器
-- Spring AOP 切面编程
-- Spring Scheduler 定时任务
-- Spring 事务注解
-
-### 数据存储
-
-- MySQL 数据库
-- Redis 内存数据库
-- Elasticsearch 搜索引擎
-- 腾讯云 COS 对象存储
-
-### 工具类
-
-- Easy Excel 表格处理
-- Hutool 工具库
-- Apache Commons Lang3 工具类
-- Lombok 注解
-
-### 业务特性
-
-- 业务代码生成器（支持自动生成 Service、Controller、数据模型代码）
-- Spring Session Redis 分布式登录
-- 全局请求响应拦截器（记录日志）
-- 全局异常处理器
-- 自定义错误码
-- 封装通用响应类
-- Swagger + Knife4j 接口文档
-- 自定义权限注解 + 全局校验
-- 全局跨域处理
-- 长整数丢失精度解决
-- 多环境配置
+基于Spring Boot + Redis + MySQL + Elasticsearch + Next.js 服务端渲染的面试刷题平台。
 
 
 ## 业务功能
 
-- 提供示例 SQL（用户、帖子、帖子点赞、帖子收藏表）
-- 用户登录、注册、注销、更新、检索、权限管理
-- 帖子创建、删除、编辑、更新、数据库检索、ES 灵活检索
-- 帖子点赞、取消点赞
-- 帖子收藏、取消收藏、检索已收藏帖子
-- 帖子全量同步 ES、增量同步 ES 定时任务
-- 支持微信开放平台登录
-- 支持微信公众号订阅、收发消息、设置菜单
-- 支持分业务的文件上传
+- 刷题记录：基于 Redis BitMap + Redisson 实现用户年度刷题记录的统计，相比数据库存储节约几百倍空间。并通过本地缓存 + 返回值优化 + 位运算进一步提升接口性能。
+- 分词搜索：自主搭建 ES 代替 MySQL 模糊查询，并通过为索引绑定 ik 分词器实现了更灵活的分词搜索。
+- 基于 MyBatis 的 batch 操作实现题目批量管理，并通过任务拆分 + CompletableFuture 并发编程提升批处理性能。
+- 引入 Druid 连接池来监控慢 SQL，并通过调整连接数配置，进一步提升了批量操作的性能。
+- 使用 Caffeine 本地缓存提升题库查询性能，并通过接入 Hotkey 并配置热 key 探测规则来自动缓存热门题目，防止瞬时流量击垮数据库。
+- 为限制恶意用户访问，基于 WebFilter + BloomFilter 实现 IP 黑名单拦截，并通过 Nacos 配置中心动态更新黑名单，便于维护。
+- 使用 Knife4j + Swagger 自动生成后端接口文档，并通过编写 ApiOperation 等注解补充接口注释，避免了人工编写维护文档的麻烦。
 

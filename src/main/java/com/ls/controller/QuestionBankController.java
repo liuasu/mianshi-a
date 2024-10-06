@@ -1,5 +1,8 @@
 package com.ls.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.ls.annotation.AuthCheck;
@@ -149,10 +152,10 @@ public class QuestionBankController {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
 
         //从热key中取数据
-        String key = "bank_detail_"+id;
+        String key = "bank_detail_" + id;
         if (JdHotKeyStore.isHotKey(key)) {
             Object cacheQuestionBank = JdHotKeyStore.get(key);
-            if(cacheQuestionBank!=null){
+            if (cacheQuestionBank != null) {
                 return ResultUtils.success((QuestionBankVO) cacheQuestionBank);
             }
         }
@@ -171,7 +174,7 @@ public class QuestionBankController {
         }
 
         //设置热key
-        JdHotKeyStore.smartSet(key,questionBankVO);
+        JdHotKeyStore.smartSet(key, questionBankVO);
 
         // 获取封装类
         return ResultUtils.success(questionBankVO);
@@ -202,6 +205,8 @@ public class QuestionBankController {
      * @return
      */
     @PostMapping("/list/page/vo")
+    @SentinelResource(value = "listQuestionBankVOByPage",
+            blockHandler = "handleBlockException", fallback = "handleFallback")
     public BaseResponse<Page<QuestionBankVO>> listQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
                                                                        HttpServletRequest request) {
         long current = questionBankQueryRequest.getCurrent();
@@ -214,6 +219,32 @@ public class QuestionBankController {
         // 获取封装类
         return ResultUtils.success(questionBankService.getQuestionBankVOPage(questionBankPage, request));
     }
+
+
+    /**
+     * listQuestionBankVOByPage 流控操作
+     * 限流：提示“系统压力过大，请耐心等待”
+     *
+     * @return {@link BaseResponse }<{@link Page }<{@link QuestionBankVO }>>
+     */
+    public BaseResponse<Page<QuestionBankVO>> handleBlockException(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
+                                                                   HttpServletRequest request, BlockException ex) {
+        if (ex instanceof DegradeException) {
+            return handleBlockException(questionBankQueryRequest,request,ex);
+        }
+        // 限流操作
+        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统压力过大，请耐心等待");
+    }
+
+    /**
+     * listQuestionBankVOByPage 降级操作：直接返回本地数据
+     */
+    public BaseResponse<Page<QuestionBankVO>> handleFallback(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
+                                                             HttpServletRequest request, Throwable ex) {
+        // 可以返回本地数据或空数据
+        return ResultUtils.success(null);
+    }
+
 
     /**
      * 分页获取当前登录用户创建的题库列表

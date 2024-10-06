@@ -1,6 +1,12 @@
 package com.ls.controller;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.EntryType;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.Tracer;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ls.annotation.AuthCheck;
 import com.ls.common.BaseResponse;
@@ -63,8 +69,8 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
         List<String> tags = questionAddRequest.getTags();
-        if(tags!= null){
-           question.setTags(JSONUtil.toJsonStr(tags));
+        if (tags != null) {
+            question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 数据校验
         questionService.validQuestion(question, true);
@@ -124,7 +130,7 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
         List<String> tags = questionUpdateRequest.getTags();
-        if(tags!= null){
+        if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 数据校验
@@ -164,7 +170,7 @@ public class QuestionController {
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-        ThrowUtils.throwIf(questionQueryRequest==null,ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
         return ResultUtils.success(questionPage);
     }
@@ -189,6 +195,59 @@ public class QuestionController {
         // 获取封装类
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
+
+    /**
+     * 分页获取题目列表（封装类 - 限流）
+     *
+     * @param questionQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/list/page/vo/sentinel")
+    public BaseResponse<Page<QuestionVO>> listQuestionVOByPageSentinel(@RequestBody QuestionQueryRequest questionQueryRequest,
+                                                                       HttpServletRequest request) {
+        long current = questionQueryRequest.getCurrent();
+        long size = questionQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        //基于ip进行限流
+        String remoteAddr = request.getRemoteAddr();
+        Entry entry = null;
+        try {
+            entry = SphU.entry("listQuestionVOByPage", EntryType.IN, 1, remoteAddr);
+            // 查询数据库
+            Page<Question> questionPage = questionService.page(new Page<>(current, size),
+                    questionService.getQueryWrapper(questionQueryRequest));
+            // 获取封装类
+            return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+        } catch (Throwable ex) {
+            // 业务异常
+            if (!BlockException.isBlockException(ex)) {
+                Tracer.trace(ex);
+                return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统错误");
+            }
+            // 降级操作
+            if (ex instanceof DegradeException) {
+                return handleFallback(questionQueryRequest, request, ex);
+            }
+            // 限流操作
+            return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "访问过于频繁，请稍后再试");
+        } finally {
+            if (entry != null) {
+                entry.exit(1, remoteAddr);
+            }
+        }
+    }
+
+    /**
+     * listQuestionVOByPage 降级操作：直接返回本地数据
+     */
+    public BaseResponse<Page<QuestionVO>> handleFallback(QuestionQueryRequest questionQueryRequest,
+                                                         HttpServletRequest request, Throwable ex) {
+        // 可以返回本地数据或空数据
+        return ResultUtils.success(null);
+    }
+
 
     /**
      * 分页获取当前登录用户创建的题目列表
@@ -232,7 +291,7 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionEditRequest, question);
         List<String> tags = questionEditRequest.getTags();
-        if(tags!= null){
+        if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 数据校验
@@ -279,9 +338,9 @@ public class QuestionController {
     @PostMapping("/batch/del")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> batchDelQuestions(@RequestBody QuestionBatchDelRequest questionBatchDelRequest) {
-    ThrowUtils.throwIf(questionBatchDelRequest == null,ErrorCode.PARAMS_ERROR);
-    questionService.batchDelQuestions(questionBatchDelRequest);
-    return ResultUtils.success(true);
+        ThrowUtils.throwIf(questionBatchDelRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDelQuestions(questionBatchDelRequest);
+        return ResultUtils.success(true);
     }
 
     // endregion

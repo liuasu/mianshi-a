@@ -14,7 +14,7 @@ public class HotKeyConfig {
     /**
      * Etcd 服务器完整地址
      */
-    private String etcdServer = "http://127.0.0.1:2379";
+    private String etcdServer;
 
     /**
      * 应用名称
@@ -43,5 +43,6 @@ public class HotKeyConfig {
                 .setEtcdServer(etcdServer)
                 .build();
         starter.startPipeline();
+
     }
 }
